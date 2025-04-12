@@ -2,7 +2,7 @@ ul {
   /* border-bottom: 3px solid yellowgreen; */
 }
 li {
-  background: rgb(5, 5, 53);
+  background: rgb(12, 12, 150);
   color: white !important;
   border: 3px solid white;
   border-radius: 10px 10px 0px 0px;
@@ -21,8 +21,8 @@ li:hover {
   border-radius: 10px 10px 0px 0px;
 }
 
-/* .nav-link.active {
+.nav-item.active .nav-link {
   color: #fff !important;
-  background-color: #007bff !important;
-  border-radius: 5px;
-} */
+  background-color: yellowgreen !important;
+  border-radius: 5px 5px 0px 0px;
+}

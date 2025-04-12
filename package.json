@@ -15,11 +15,16 @@
     "@angular/compiler": "^19.2.0",
     "@angular/core": "^19.2.0",
     "@angular/forms": "^19.2.0",
+    "@angular/localize": "^19.2.6",
     "@angular/platform-browser": "^19.2.0",
     "@angular/platform-browser-dynamic": "^19.2.0",
     "@angular/router": "^19.2.0",
     "@progress/kendo-angular-buttons": "^18.5.0",
+    "@progress/kendo-angular-charts": "^18.5.0",
+    "@progress/kendo-angular-grid": "^18.5.0",
+    "@progress/kendo-angular-inputs": "^18.5.0",
     "@progress/kendo-angular-l10n": "^18.5.0",
+    "@progress/kendo-data-query": "^1.7.1",
     "@progress/kendo-theme-default": "^10.5.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
@@ -36,6 +41,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "rimraf": "^6.0.1",
     "typescript": "~5.7.2"
   }
 }
