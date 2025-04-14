@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { KENDO_CHARTS } from '@progress/kendo-angular-charts';
 import { HomeComponent } from '../home/home.component';
+import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
 
 import {
   DataBindingDirective,
@@ -44,6 +45,7 @@ export interface Employee {
     KENDO_GRID_EXCEL_EXPORT,
     HomeComponent,
     FormsModule,
+    DropDownsModule,
   ],
 })
 export class LeadMgtComponent implements OnInit {
@@ -112,5 +114,40 @@ export class LeadMgtComponent implements OnInit {
     const image: { [Key: string]: string } = images;
 
     return image[code];
+  }
+
+  // --------------
+  // refreshGrid: any = []
+
+  public onEdit(dataItem: Employee): void {
+    console.log('Edit clicked for:', dataItem);
+    // Add your edit logic here
+    const updatedJobTitle = prompt('Enter new job title:', dataItem.job_title);
+    if (updatedJobTitle) {
+      const employeeIndex = this.gridData.findIndex(
+        (emp) => emp.id === dataItem.id
+      );
+      if (employeeIndex !== -1) {
+        this.gridData[employeeIndex].job_title = updatedJobTitle;
+        this.refreshGrid();
+        console.log('Employee updated:', this.gridData[employeeIndex]);
+      }
+    }
+  }
+
+  public onDelete(dataItem: Employee): void {
+    console.log('Delete clicked for:', dataItem);
+    // Add your delete logic here
+    const confirmDelete = confirm(
+      `Are you sure you want to delete ${dataItem.full_name}?`
+    );
+    if (confirmDelete) {
+      this.gridData = this.gridData.filter((emp) => emp.id !== dataItem.id);
+      this.refreshGrid();
+      console.log('Employee deleted:', dataItem);
+    }
+  }
+  private refreshGrid(): void {
+    this.gridView = [...this.gridData]; // Update gridView with the latest data
   }
 }
