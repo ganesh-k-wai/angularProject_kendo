@@ -42,3 +42,65 @@
   border: none !important;
   box-shadow: none !important;
 }
+
+.dropdown-menu {
+  z-index: 1050; /* Ensure it appears above the grid */
+  position: absolute; /* Ensure proper positioning */
+}
+.k-grid {
+  z-index: 1; /* Lower the grid's z-index */
+}
+
+.colorYellowGreen {
+  background-color: yellowgreen !important;
+  color: white !important;
+}
+
+.gridlines {
+  color: yellowgreen !important;
+}
+
+/* Toolbar container */
+.custom-toolbar {
+  margin: 0;
+  padding: 0;
+}
+
+/* Lead Dropdown */
+.lead-dropdown .dropdown-menu {
+  z-index: 1050;
+  position: absolute;
+}
+
+/* Saved Preferences Dropdown */
+.saved-preferences-dropdown .dropdown-menu {
+  z-index: 1050;
+  position: absolute;
+}
+
+/* Search Box */
+.search-box {
+  flex-grow: 1;
+  margin-left: 8px;
+  margin-right: 8px;
+}
+
+.k-grid-header,
+.k-grid .k-header {
+  background-color: navy;
+  color: rgb(231, 228, 228);
+  font-weight: bold;
+}
+
+/* for checkbox  */
+.k-grid-header .k-checkbox,
+.k-grid-header .k-checkbox-label {
+  background-color: transparent;
+  color: white !important;
+}
+
+.k-grid-header th.k-header:first-child {
+  background-color: navy;
+  color: white !important;
+  border: white !important;
+}

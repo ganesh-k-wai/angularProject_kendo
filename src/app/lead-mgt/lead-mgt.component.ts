@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { KENDO_CHARTS } from '@progress/kendo-angular-charts';
 import { HomeComponent } from '../home/home.component';
 import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
@@ -16,6 +16,7 @@ import { SVGIcon, fileExcelIcon, filePdfIcon } from '@progress/kendo-svg-icons';
 import { employees } from './employees';
 import { images } from './images';
 import { FormsModule } from '@angular/forms';
+import { EmployeeService } from '../employee-service.service';
 
 export interface Employee {
   id: string;
@@ -36,6 +37,7 @@ export interface Employee {
   standalone: true,
   templateUrl: './lead-mgt.component.html',
   styleUrl: './lead-mgt.component.css',
+  encapsulation: ViewEncapsulation.None,
   imports: [
     CommonModule,
     KENDO_GRID,
@@ -57,8 +59,46 @@ export class LeadMgtComponent implements OnInit {
   public excelSVG: SVGIcon = fileExcelIcon;
   public large: string = 'large'; // Define the 'large' property
 
+  public employees: any[] = [];
+  constructor(private employeeService: EmployeeService) {}
+
   public ngOnInit(): void {
     this.gridView = this.gridData;
+    this.loadEmployees();
+  }
+  // Load all employees
+  loadEmployees(): void {
+    this.employeeService.getEmployees().subscribe((data) => {
+      this.employees = data;
+    });
+  }
+
+  // Add a new employee
+  addEmployee(): void {
+    console.log('Adding new employee...');
+    const newEmployee = {
+      full_name: 'New Employee',
+      job_title: 'Developer',
+      country: 'US',
+      is_online: true,
+      rating: 3,
+      target: 50,
+      budget: 40000,
+      phone: '(555) 555-5555',
+      address: '789 Pine St',
+      img_id: '3',
+      gender: 'M',
+    };
+    this.employeeService.addEmployee(newEmployee).subscribe(() => {
+      this.loadEmployees();
+    });
+  }
+
+  // Delete an employee
+  deleteEmployee(id: string): void {
+    this.employeeService.deleteEmployee(id).subscribe(() => {
+      this.loadEmployees();
+    });
   }
 
   public onFilter(value: Event): void {
@@ -149,5 +189,44 @@ export class LeadMgtComponent implements OnInit {
   }
   private refreshGrid(): void {
     this.gridView = [...this.gridData]; // Update gridView with the latest data
+  }
+
+  // -------dropdown------
+  public allLeads = [
+    { id: 1, full_name: 'John Doe' },
+    { id: 2, full_name: 'Jane Smith' },
+    { id: 3, full_name: 'Michael Johnson' },
+    // ...other leads
+  ];
+
+  public selectedLead: any = null;
+
+  selectLead(lead: any): void {
+    this.selectedLead = lead;
+    console.log('Selected Lead:', lead);
+    // Add logic to filter your grid if needed
+  }
+
+  public savedPreferences: Array<{ id: number; text: string }> = [
+    { id: 1, text: 'Default View' },
+    { id: 2, text: 'Custom View 1' },
+    { id: 3, text: 'Custom View 2' },
+  ];
+
+  // Selected preference
+  public selectedPreference: { id: number; text: string } | null = null;
+
+  // Handle preference selection
+  public onPreferenceSelect(preference: { id: number; text: string }): void {
+    this.selectedPreference = preference;
+    console.log('Selected Preference:', preference);
+    // Add logic to apply the selected preference
+    if (preference.id === 1) {
+      console.log('Applying Default View...');
+    } else if (preference.id === 2) {
+      console.log('Applying Custom View 1...');
+    } else if (preference.id === 3) {
+      console.log('Applying Custom View 2...');
+    }
   }
 }
