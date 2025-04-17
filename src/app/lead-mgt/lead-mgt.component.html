@@ -32,6 +32,7 @@
                     </button>
                     <button class="exportExel" (click)="addEmployee()">
                         Create </button>
+
                     <!-- <button kendoGridPDFCommand [svgIcon]="pdfSVG">Export to PDF</button> -->
                     <div class="container-fluid px-0 custom-toolbar">
                         <div class="d-flex flex-wrap justify-content-between align-items-center w-100">
@@ -98,36 +99,49 @@
                 <kendo-grid-checkbox-column [width]="45" [headerClass]="{ 'text-center': true }" [sticky]="true"
                     [class]="{ 'text-center': true }" [resizable]="true" [columnMenu]="false"
                     [showSelectAll]="true"></kendo-grid-checkbox-column>
-                <!-- Employee  -->
-                <kendo-grid-column title="Action" [width]="100" [columnMenu]="false">
-                    button
-                    <ng-template kendoGridCellTemplate let-dataItem>
-                        <button class="btn btn-outline-primary p-0 px-1" (click)="onEdit(dataItem)"><i
-                                class="bi bi-pencil"></i></button>
-                        <button class="btn btn-outline-danger p-0 px-1 ms-1" (click)="onDelete(dataItem)"><i
-                                class="bi bi-trash"></i></button>
+                <!-- Action   -->
+                <kendo-grid-column title="Actions" [width]="150" [sticky]="true">
+                    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                        <button class="btn btn-sm btn-outline-primary" (click)="editRow(rowIndex)"
+                            *ngIf="!isRowInEditMode(rowIndex)">
+                            Edit
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" (click)="saveRow(rowIndex)"
+                            *ngIf="isRowInEditMode(rowIndex)">
+                            Save
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger ms-2" (click)="cancelEdit()"
+                            *ngIf="isRowInEditMode(rowIndex)">
+                            Cancel
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger ms-2" (click)="deleteEmployee(dataItem)"
+                            *ngIf="!isRowInEditMode(rowIndex)">
+                            Delete
+                        </button>
                     </ng-template>
-                </kendo-grid-column>
-                <kendo-grid-column field="full_name" title="Contact Name" [width]="220" [columnMenu]="false">
-                    <ng-template kendoGridCellTemplate let-dataItem>
-                        <!-- customer-photo  -->
-                        <div class="customer-photo" [ngStyle]="{ 'background-image': photoURL(dataItem) }">
-                        </div>
-                        <!-- customer-name  -->
-                        <div class="customer-name">{{ dataItem.full_name }}</div>
-                    </ng-template>
-                </kendo-grid-column>
-                <!-- job_title -->
-                <kendo-grid-column field="job_title" title="Job Title" [width]="220" [columnMenu]="false">
                 </kendo-grid-column>
 
-                <!-- country  -->
-                <kendo-grid-column field="country" title="Country" [width]="100" [class]="{ 'text-center': true }"
-                    [resizable]="false" [columnMenu]="false">
-                    <ng-template kendoGridCellTemplate let-dataItem>
-                        <img class="flag" [src]="flagURL(dataItem)" [width]="30" />
+                <!-- Full Name Column -->
+                <kendo-grid-column field="full_name" title="Full Name" [width]="220">
+                    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+
+                        <span *ngIf="!isRowInEditMode(rowIndex)">{{ dataItem.full_name }}</span>
+                        <input *ngIf="isRowInEditMode(rowIndex)" [(ngModel)]="dataItem.full_name"
+                            class="form-control" />
                     </ng-template>
                 </kendo-grid-column>
+
+                <!-- Job Title Column -->
+                <kendo-grid-column field="job_title" title="Job Title" [width]="220">
+                    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                        <span *ngIf="!isRowInEditMode(rowIndex)">{{ dataItem.job_title }}</span>
+                        <input *ngIf="isRowInEditMode(rowIndex)" [(ngModel)]="dataItem.job_title"
+                            class="form-control" />
+                    </ng-template>
+                </kendo-grid-column>
+
+
+
                 <!-- status  -->
                 <kendo-grid-column field="is_online" title="Status" [width]="100" [class]="{ 'text-center': true }"
                     [resizable]="false" filter="boolean" [columnMenu]="false">
@@ -164,21 +178,37 @@
                         </kendo-sparkline>
                     </ng-template>
                 </kendo-grid-column>
-                <!-- budget  -->
-                <kendo-grid-column field="budget" title="Budget" [width]="100" filter="numeric" [columnMenu]="false">
-                    <ng-template kendoGridCellTemplate let-dataItem>
-                        <span [ngClass]="{ 'red text-bold': dataItem.budget < 0 }">{{
-                            dataItem.budget | currency
-                            }}</span>
+                <!-- target Column -->
+                <kendo-grid-column field="target" title="Target" [width]="150">
+                    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                        <span *ngIf="!isRowInEditMode(rowIndex)">{{ dataItem.target | currency }}</span>
+                        <input *ngIf="isRowInEditMode(rowIndex)" [(ngModel)]="dataItem.target" type="number"
+                            class="form-control" />
                     </ng-template>
                 </kendo-grid-column>
 
-                <!-- Contact  -->
-                <!-- phone  -->
-                <kendo-grid-column field="phone" title="Phone" [width]="130" [columnMenu]="false">
+                <!-- budget  -->
+                <kendo-grid-column field="budget" title="Budget" [width]="150" [columnMenu]="false">
+                    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                        <span *ngIf="!isRowInEditMode(rowIndex)">{{ dataItem.budget | currency }}</span>
+                        <input *ngIf="isRowInEditMode(rowIndex)" [(ngModel)]="dataItem.budget" type="number"
+                            class="form-control" />
+                    </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column field="phone" title="Phone" [width]="150" [columnMenu]="false">
+                    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                        <span *ngIf="!isRowInEditMode(rowIndex)">{{ dataItem.phone }}</span>
+                        <input *ngIf="isRowInEditMode(rowIndex)" [(ngModel)]="dataItem.phone" type="number"
+                            class="form-control" />
+                    </ng-template>
                 </kendo-grid-column>
                 <!-- address  -->
                 <kendo-grid-column field="address" title="Address" [width]="200" [columnMenu]="false">
+                    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                        <span *ngIf="!isRowInEditMode(rowIndex)">{{ dataItem.address }}</span>
+                        <input *ngIf="isRowInEditMode(rowIndex)" [(ngModel)]="dataItem.address" type="text"
+                            class="form-control" />
+                    </ng-template>
                 </kendo-grid-column>
 
                 <kendo-grid-pdf fileName="Employees.pdf" [repeatHeaders]="true"></kendo-grid-pdf>

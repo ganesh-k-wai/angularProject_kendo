@@ -93,11 +93,11 @@
 }
 
 /* for checkbox  */
-.k-grid-header .k-checkbox,
+/* .k-grid-header .k-checkbox,
 .k-grid-header .k-checkbox-label {
-  background-color: transparent;
-  color: white !important;
-}
+  background-color: white;
+  color: black !important;
+} */
 
 .k-grid-header th.k-header:first-child {
   background-color: navy;

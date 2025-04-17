@@ -13,10 +13,11 @@ import {
 import { KENDO_INPUTS } from '@progress/kendo-angular-inputs';
 import { process } from '@progress/kendo-data-query';
 import { SVGIcon, fileExcelIcon, filePdfIcon } from '@progress/kendo-svg-icons';
-import { employees } from './employees';
-import { images } from './images';
+// import { employees } from './employees';
+// import { images } from './images';
 import { FormsModule } from '@angular/forms';
 import { EmployeeService } from '../employee-service.service';
+import { ChangeDetectorRef } from '@angular/core';
 
 export interface Employee {
   id: string;
@@ -52,7 +53,7 @@ export interface Employee {
 })
 export class LeadMgtComponent implements OnInit {
   @ViewChild(DataBindingDirective) dataBinding!: DataBindingDirective;
-  public gridData: Employee[] = employees;
+  public gridData: Employee[] = [];
   public gridView: Employee[] = [];
   public mySelection: string[] = [];
   public pdfSVG: SVGIcon = filePdfIcon;
@@ -60,45 +61,22 @@ export class LeadMgtComponent implements OnInit {
   public large: string = 'large'; // Define the 'large' property
 
   public employees: any[] = [];
-  constructor(private employeeService: EmployeeService) {}
+  constructor(
+    private employeeService: EmployeeService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
+  private editedRowIndex: number | null = null;
+
+  loadEmployees(): void {
+    this.employeeService.getEmployees().subscribe((data) => {
+      this.employees = data; // Store the fetched data
+      this.gridView = [...this.employees]; // Bind the data to the grid
+    });
+  }
   public ngOnInit(): void {
     this.gridView = this.gridData;
     this.loadEmployees();
-  }
-  // Load all employees
-  loadEmployees(): void {
-    this.employeeService.getEmployees().subscribe((data) => {
-      this.employees = data;
-    });
-  }
-
-  // Add a new employee
-  addEmployee(): void {
-    console.log('Adding new employee...');
-    const newEmployee = {
-      full_name: 'New Employee',
-      job_title: 'Developer',
-      country: 'US',
-      is_online: true,
-      rating: 3,
-      target: 50,
-      budget: 40000,
-      phone: '(555) 555-5555',
-      address: '789 Pine St',
-      img_id: '3',
-      gender: 'M',
-    };
-    this.employeeService.addEmployee(newEmployee).subscribe(() => {
-      this.loadEmployees();
-    });
-  }
-
-  // Delete an employee
-  deleteEmployee(id: string): void {
-    this.employeeService.deleteEmployee(id).subscribe(() => {
-      this.loadEmployees();
-    });
   }
 
   public onFilter(value: Event): void {
@@ -142,55 +120,6 @@ export class LeadMgtComponent implements OnInit {
     this.dataBinding.skip = 0;
   }
 
-  public photoURL(dataItem: { img_id: string; gender: string }): string {
-    const code: string = dataItem.img_id + dataItem.gender;
-    const image: { [Key: string]: string } = images;
-
-    return image[code];
-  }
-
-  public flagURL(dataItem: { country: string }): string {
-    const code: string = dataItem.country;
-    const image: { [Key: string]: string } = images;
-
-    return image[code];
-  }
-
-  // --------------
-  // refreshGrid: any = []
-
-  public onEdit(dataItem: Employee): void {
-    console.log('Edit clicked for:', dataItem);
-    // Add your edit logic here
-    const updatedJobTitle = prompt('Enter new job title:', dataItem.job_title);
-    if (updatedJobTitle) {
-      const employeeIndex = this.gridData.findIndex(
-        (emp) => emp.id === dataItem.id
-      );
-      if (employeeIndex !== -1) {
-        this.gridData[employeeIndex].job_title = updatedJobTitle;
-        this.refreshGrid();
-        console.log('Employee updated:', this.gridData[employeeIndex]);
-      }
-    }
-  }
-
-  public onDelete(dataItem: Employee): void {
-    console.log('Delete clicked for:', dataItem);
-    // Add your delete logic here
-    const confirmDelete = confirm(
-      `Are you sure you want to delete ${dataItem.full_name}?`
-    );
-    if (confirmDelete) {
-      this.gridData = this.gridData.filter((emp) => emp.id !== dataItem.id);
-      this.refreshGrid();
-      console.log('Employee deleted:', dataItem);
-    }
-  }
-  private refreshGrid(): void {
-    this.gridView = [...this.gridData]; // Update gridView with the latest data
-  }
-
   // -------dropdown------
   public allLeads = [
     { id: 1, full_name: 'John Doe' },
@@ -227,6 +156,110 @@ export class LeadMgtComponent implements OnInit {
       console.log('Applying Custom View 1...');
     } else if (preference.id === 3) {
       console.log('Applying Custom View 2...');
+    }
+  }
+
+  // ........edit,delete row .............
+  private newRowIndex: number | null = null;
+  // Add a new employee
+  addEmployee(): void {
+    const newEmployee = {
+      id: Date.now().toString(),
+      full_name: '',
+      job_title: '',
+      country: '',
+      is_online: true,
+      rating: 3,
+      target: 50,
+      budget: 40000,
+      phone: '',
+      address: '',
+      img_id: '',
+      gender: '',
+    };
+    this.employeeService.addEmployee(newEmployee).subscribe(() => {
+      // Add the new employee to the top of the grid
+      this.gridView.unshift(newEmployee);
+      // Update the grid data to reflect the new order
+      this.gridData = [...this.gridView]; // Set the first row in edit mode
+      this.newRowIndex = 0;
+      this.editedRowIndex = 0;
+      // Scroll to the newly created row
+
+      // Trigger change detection to refresh the grid
+      this.cdr.detectChanges();
+
+      setTimeout(() => {
+        const gridElement = document.querySelector('kendo-grid') as HTMLElement;
+        if (gridElement) {
+          const firstRow = gridElement.querySelector(
+            'tr.k-grid-edit-row'
+          ) as HTMLElement;
+          if (firstRow) {
+            firstRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }
+      }, 100);
+
+      // console.log('New Employee Added:', newEmployee);
+    });
+  }
+
+  // Edit a row
+  isRowInEditMode(rowIndex: number): boolean {
+    return this.editedRowIndex === rowIndex || this.newRowIndex === rowIndex;
+  }
+
+  editRow(rowIndex: number): void {
+    this.editedRowIndex = rowIndex; // Set the row index to edit
+  }
+
+  // Save the edited row
+  saveRow(rowIndex: number): void {
+    const updatedEmployee = this.gridView[rowIndex];
+
+    // If the row is a new employee (ID is empty), add it to the backend
+    if (!updatedEmployee.id) {
+      updatedEmployee.id = Date.now().toString(); // Generate a unique ID
+      this.employeeService.addEmployee(updatedEmployee).subscribe(() => {
+        this.editedRowIndex = null;
+        this.newRowIndex = null; // Reset the new row index
+        this.loadEmployees(); // Refresh the grid
+      });
+    } else {
+      // Otherwise, update the existing employee
+      this.employeeService
+        .updateEmployee(updatedEmployee.id, updatedEmployee)
+        .subscribe(() => {
+          this.editedRowIndex = null;
+          this.newRowIndex = null; // Reset the new row index
+          this.loadEmployees(); // Refresh the grid
+        });
+    }
+  }
+
+  // Cancel editing
+  cancelEdit(): void {
+    if (this.newRowIndex !== null) {
+      // Remove the new row if editing is canceled
+      this.gridView.splice(this.newRowIndex, 1);
+      this.newRowIndex = null;
+    }
+    this.editedRowIndex = null;
+
+    // No need to reload data from the backend since the row was not saved
+    this.cdr.detectChanges();
+  }
+
+  // Delete an employee
+  deleteEmployee(employee: any): void {
+    const confirmDelete = confirm(
+      `Are you sure you want to delete ${employee.full_name}?`
+    );
+    if (confirmDelete) {
+      this.employeeService.deleteEmployee(employee.id).subscribe(() => {
+        this.loadEmployees();
+      });
     }
   }
 }
