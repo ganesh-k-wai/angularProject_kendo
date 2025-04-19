@@ -38,7 +38,7 @@
                         <div class="d-flex flex-wrap justify-content-between align-items-center w-100">
                             <!-- Lead Dropdown -->
                             <div class="dropdown lead-dropdown">
-                                <button class="btn border dropdown-toggle w-100 btn-sm " type="button" id="leadDropdown"
+                                <button class="btn border dropdown-toggle w-100 btn-md " type="button" id="leadDropdown"
                                     data-bs-toggle="dropdown" aria-expanded="false">
                                     {{ selectedLead?.full_name || 'All Leads' }}
                                 </button>
@@ -56,7 +56,7 @@
 
                             <!-- Saved Preferences Dropdown -->
                             <div class="dropdown saved-preferences-dropdown">
-                                <button class="btn border dropdown-toggle w-100 btn-sm ms-3" type="button"
+                                <button class="btn border dropdown-toggle w-100 btn-md ms-3" type="button"
                                     id="savedPreferencesDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                     {{ selectedPreference?.text || 'Saved Preferences' }}
                                 </button>
@@ -70,25 +70,35 @@
                             </div>
 
                             <!-- Search Box -->
-                            <div class="search-box flex-grow-1  ms-5">
+                            <div class="search-box flex-grow-1  ms-5 ">
                                 <kendo-textbox [style.width.%]="70" placeholder="Search in all columns..."
                                     (valueChange)="onFilter($event)"></kendo-textbox>
                             </div>
+                            <!-- switch button  -->
+                            <div class="btn-group toggle-switch px-2 btn-group-sm py-2" role="group"
+                                style="height: 45px;">
+                                <input type="radio" class="btn-check" name="options" id="nonIntl" autocomplete="off"
+                                    checked>
+                                <label class="btn btn-outline-success rounded-pill " for="nonIntl">Non-Intl.</label>
+
+                                <input type="radio" class="btn-check" name="options" id="intl" autocomplete="off">
+                                <label class="btn btn-outline-success rounded-pill" for="intl">Intl.</label>
+                            </div>
 
                             <!-- Clear Filters Button -->
-                            <button class="btn btn-sm  colorYellowGreen border-0 px-4 mx-1 ">Clear
+                            <button class="btn btn-md  colorYellowGreen border-0 px-4 mx-1 ">Clear
                                 Filters</button>
 
                             <!-- Bulk Edit Button -->
-                            <button class="btn btn-sm  colorYellowGreen border-0 px-4 mx-1 ">Bulk
+                            <button class="btn btn-md  colorYellowGreen border-0 px-4 mx-1 ">Bulk
                                 Edit</button>
 
                             <!-- Save Preference Button -->
-                            <button class="btn btn-sm  colorYellowGreen border-0 px-4 mx-1 ">Save
+                            <button class="btn btn-md  colorYellowGreen border-0 px-4 mx-1 ">Save
                                 Preference</button>
 
                             <!-- Gridlines Button -->
-                            <button class="btn btn-sm btn-  mx-1 gridlines-btn">
+                            <button class="btn btn-md   mx-1 gridlines-btn border">
                                 <i class="bi bi-list gridlines"></i>
                             </button>
                         </div>
@@ -100,23 +110,23 @@
                     [class]="{ 'text-center': true }" [resizable]="true" [columnMenu]="false"
                     [showSelectAll]="true"></kendo-grid-checkbox-column>
                 <!-- Action   -->
-                <kendo-grid-column title="Actions" [width]="150" [sticky]="true">
+                <kendo-grid-column title="Actions" [width]="150" [sticky]="true" headerClass="custom-actions-header">
                     <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                         <button class="btn btn-sm btn-outline-primary" (click)="editRow(rowIndex)"
                             *ngIf="!isRowInEditMode(rowIndex)">
-                            Edit
+                            <i class="bi bi-pencil"></i>
                         </button>
                         <button class="btn btn-sm btn-outline-success" (click)="saveRow(rowIndex)"
                             *ngIf="isRowInEditMode(rowIndex)">
-                            Save
+                            <i class="bi bi-check2"></i>
                         </button>
                         <button class="btn btn-sm btn-outline-danger ms-2" (click)="cancelEdit()"
                             *ngIf="isRowInEditMode(rowIndex)">
-                            Cancel
+                            <i class="bi bi-x"></i>
                         </button>
                         <button class="btn btn-sm btn-outline-danger ms-2" (click)="deleteEmployee(dataItem)"
                             *ngIf="!isRowInEditMode(rowIndex)">
-                            Delete
+                            <i class="bi bi-trash"></i>
                         </button>
                     </ng-template>
                 </kendo-grid-column>
@@ -156,12 +166,20 @@
 
                 <!-- performance  -->
                 <!-- rating  -->
+
                 <kendo-grid-column field="rating" title="Rating" [width]="200" [resizable]="false" filter="numeric"
                     [columnMenu]="false">
-                    <ng-template kendoGridCellTemplate let-dataItem>
-                        <kendo-rating [value]="dataItem.rating" [readonly]="true" precision="half"></kendo-rating>
+                    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                        <!-- Display readonly rating when not in edit mode -->
+                        <kendo-rating *ngIf="!isRowInEditMode(rowIndex)" [value]="dataItem.rating" [readonly]="true"
+                            precision="half"></kendo-rating>
+
+                        <!-- Editable rating when in edit mode -->
+                        <kendo-rating *ngIf="isRowInEditMode(rowIndex)" [(ngModel)]="dataItem.rating"
+                            precision="half"></kendo-rating>
                     </ng-template>
                 </kendo-grid-column>
+
                 <!-- progress bar  -->
                 <kendo-grid-column field="target" title="Engagement" [width]="230" [resizable]="false" filter="numeric"
                     [columnMenu]="false">

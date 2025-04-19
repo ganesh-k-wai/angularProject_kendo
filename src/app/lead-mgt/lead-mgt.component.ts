@@ -80,6 +80,9 @@ export class LeadMgtComponent implements OnInit {
   }
 
   public onFilter(value: Event): void {
+    // console.log('Search Value:', value);
+    // console.log(typeof value);
+
     if (!this.gridData || this.gridData.length === 0) {
       return;
     }

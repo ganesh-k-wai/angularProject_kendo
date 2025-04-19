@@ -104,3 +104,29 @@
   color: white !important;
   border: white !important;
 }
+
+.toggle-switch {
+  background-color: #002b6f; /* Dark blue background */
+  padding: 4px;
+
+  border-radius: 30px;
+}
+
+.toggle-switch .btn {
+  color: white;
+  border: none;
+  font-weight: bold;
+  padding: 6px 16px;
+}
+
+.toggle-switch .btn-check:checked + .btn {
+  background-color: yellowgreen; /* Green selected background */
+  color: white;
+}
+
+.custom-actions-header {
+  background-color: navy !important; /* Light red background */
+  color: white !important; /* Dark red text */
+  font-weight: bold;
+  text-align: center;
+}
