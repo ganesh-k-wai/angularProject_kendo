@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { KENDO_CHARTS } from '@progress/kendo-angular-charts';
+import { KENDO_BUTTONS } from '@progress/kendo-angular-buttons';
+
 import { HomeComponent } from '../home/home.component';
-import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
+import { KENDO_DROPDOWNS } from '@progress/kendo-angular-dropdowns';
 
 import {
   DataBindingDirective,
@@ -18,6 +20,7 @@ import { SVGIcon, fileExcelIcon, filePdfIcon } from '@progress/kendo-svg-icons';
 import { FormsModule } from '@angular/forms';
 import { EmployeeService } from '../employee-service.service';
 import { ChangeDetectorRef } from '@angular/core';
+import { KENDO_LABEL } from '@progress/kendo-angular-label';
 
 export interface Employee {
   id: string;
@@ -48,7 +51,9 @@ export interface Employee {
     KENDO_GRID_EXCEL_EXPORT,
     HomeComponent,
     FormsModule,
-    DropDownsModule,
+    KENDO_DROPDOWNS,
+    KENDO_LABEL,
+    KENDO_BUTTONS,
   ],
 })
 export class LeadMgtComponent implements OnInit {
@@ -265,4 +270,16 @@ export class LeadMgtComponent implements OnInit {
       });
     }
   }
+
+  public listItems: Array<string> = [
+    'Baseball',
+    'Basketball',
+    'Cricket',
+    'Field Hockey',
+    'Football',
+    'Table Tennis',
+    'Tennis',
+    'Volleyball',
+  ];
+  public value = ['Basketball', 'Cricket'];
 }

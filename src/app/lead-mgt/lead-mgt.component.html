@@ -5,12 +5,19 @@
 
 
 <div class="container-fluid px-5   pt-2 mainContainer">
+
     <div class="row ">
         <app-home />
         <div class="col-md-12  p-0">
         </div>
         <!-- <div class="row"> -->
-
+        <div class="col-xs-12 col-sm-6 example-col">
+            <kendo-label text="ComboBox">
+                <br />
+                <kendo-combobox [data]="listItems" value="Basketball">
+                </kendo-combobox>
+            </kendo-label>
+        </div>
         <div class="col-md-12 ">
             <kendo-grid [kendoGridBinding]="gridView" kendoGridSelectBy="id" [(selectedKeys)]="mySelection"
                 [selectable]="{ mode: 'multiple', drag: true }" [pageSize]="10" [pageable]="true" [sortable]="true"
@@ -53,6 +60,8 @@
                                     </li>
                                 </ul>
                             </div>
+
+
 
                             <!-- Saved Preferences Dropdown -->
                             <div class="dropdown saved-preferences-dropdown">

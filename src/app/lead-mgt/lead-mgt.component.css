@@ -78,6 +78,12 @@
   position: absolute;
 }
 
+kendo-dropdownlist,
+kendo-dropdowntree,
+kendo-multicolumncombobox {
+  width: 210px;
+}
+
 /* Search Box */
 .search-box {
   flex-grow: 1;
